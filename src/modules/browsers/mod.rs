@@ -15,6 +15,20 @@ fn replace_character(string: &str, old_character: char, new_character: char) -> 
     return new_string;
 }
 
+fn get_string_before_character(string: &str, character: char) -> &str {
+    let character_index = string.find(character).unwrap();
+    return &string[..character_index];
+}
+
+fn supported_web_ver(version_num: &str) -> bool
+{
+    let version: i32 = get_string_before_character(version_num, '.').to_string().parse().unwrap();
+    if version >= 94 {
+        return true;
+    }
+    return false;
+}
+
 pub fn get() -> Vec<&'static str> {
     let mut current_available_browsers = Vec::new();
 
@@ -31,14 +45,18 @@ pub fn get() -> Vec<&'static str> {
     let mut mse_data = String::new();
     if mse_file.is_ok() {
         mse_file.unwrap().read_to_string(&mut mse_data).expect("INVALID_MSEDGE_PATH");
-        current_available_browsers.push("MICROSOFT_EDGE");
+        if supported_web_ver(&mse_data) {
+            current_available_browsers.push("MICROSOFT_EDGE");
+        }
     }
     
     let chv_file     = File::open(format!(r"{}", chrome_version_file_path));
     let mut chv_data = String::new();
     if chv_file.is_ok() {
         chv_file.unwrap().read_to_string(&mut chv_data).expect("INVALID_CHROME_PATH");
-        current_available_browsers.push("GOOGLE_CHROME");
+        if supported_web_ver(&chv_data) {
+            current_available_browsers.push("GOOGLE_CHROME");
+        }
     }
 
     return current_available_browsers;
