@@ -8,7 +8,7 @@ async fn main()
 {
     let brws: Vec<&'static str> = browsers::get();
     if brws.len() > 1 { 
-        brws.iter().for_each(|browser| {
+        brws.iter().for_each(|browser: &&str| {
             println!("{}", browser)
         });
     } else {
